@@ -7,13 +7,5 @@ class Roles(models.Model):
     created_at = models.DateTimeField(verbose_name="Fecha de creación")
     updated_at = models.DateTimeField(verbose_name="Fecha de actualización")
 
-    class Meta:
-        verbose_name = "Rol"
-        verbose_name_plural = "Roles"
-
     def __str__(self):
-        return f"id: {self.id} Nombre: {self.nombre}"
-
-
-# Alias para compatibilidad
-Rol = Roles
+        return f"id: {self.id} Nombre: {self.nombre} Descripcion: {self.descripcion} Fecha de creación : {self.created_at} Fecha de actualización {self.updated_at}"

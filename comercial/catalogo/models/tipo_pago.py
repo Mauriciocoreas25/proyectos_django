@@ -7,13 +7,5 @@ class Tipo_pago(models.Model):
     created_at = models.DateTimeField(verbose_name="Fecha de creación")
     updated_at = models.DateTimeField(verbose_name="Fecha de actualización")
 
-    class Meta:
-        verbose_name = "Tipo de Pago"
-        verbose_name_plural = "Tipos de Pago"
-
     def __str__(self):
-        return f"id: {self.id} Nombre: {self.nombre}"
-
-
-# Alias para compatibilidad con convenciones CamelCase
-TipoPago = Tipo_pago
+        return f"id: {self.id} Nombre: {self.nombre} Descripcion: {self.descripcion} Fecha de creación : {self.created_at} Fecha de actualización {self.updated_at}"

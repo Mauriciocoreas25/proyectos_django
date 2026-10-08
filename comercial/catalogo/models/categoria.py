@@ -6,7 +6,7 @@ class Categoria(models.Model):
     # define un campo de tipo texto con maximo de 255 caracteres
     nombre = models.TextField(max_length=255, verbose_name="Nombre")
     # define un campo de tipo texto que puede ser nulo con maximo de 255 caracteres
-    descripcion = models.TextField(max_length=255, null=True, blank=True, verbose_name="Descripción")
+    descripcion = models.TextField(max_length=255, null=True, verbose_name="Descripción")
     # define campos de tipo fecha y hora para almacenar la fecha de creacion y actualización del registro
     created_at = models.DateTimeField(verbose_name="Fecha de creación")
     updated_at = models.DateTimeField(verbose_name="Fecha de actualización")

@@ -10,13 +10,5 @@ class Clientes(models.Model):
     created_at = models.DateTimeField(verbose_name="Fecha de creación")
     updated_at = models.DateTimeField(verbose_name="Fecha de actualización")
 
-    class Meta:
-        verbose_name = "Cliente"
-        verbose_name_plural = "Clientes"
-
     def __str__(self):
-        return f"id: {self.id} Nombre: {self.nombre} {self.apellido}"
-
-
-# Alias para compatibilidad
-Cliente = Clientes
+        return f"id: {self.id} Nombre: {self.nombre} Apellido: {self.apellido} Fecha de creación : {self.created_at} Fecha de actualización {self.updated_at}"
