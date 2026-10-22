@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}Clientes{% endblock titulo %}
+
+{% block contenido %}
+<h1 class="font-bold text-balance text-2xl mb-4">Lista de Clientes</h1>
+<a href="{% url 'add_cliente' %}" class="p-2 bg-blue-600 my-4 inline-block text-white rounded hover:bg-blue-700">Agregar cliente</a>
+<div class="grid grid-cols-5 gap-2 border-b max-w-3xl font-bold py-1">
+    <p>Nombre</p>
+    <p>Teléfono</p>
+    <p>Correo</p>
+    <p>Eliminar</p>
+    <p>Actualizar</p>
+</div>
+{% if clientes %}
+    {% for cliente in clientes %}
+    <div class="grid grid-cols-5 gap-2 max-w-3xl hover:bg-gray-300 py-1 items-center border-b border-gray-200">
+        <p>{{ cliente.nombre }} {{ cliente.apellido }}</p>
+        <p>{{ cliente.telefono }}</p>
+        <p>{{ cliente.correo|default:"-" }}</p>
+        <a href="{% url 'delete_cliente' cliente.id %}" class="cursor-pointer text-blue-600 hover:text-blue-800">Eliminar</a>
+        <a href="{% url 'update_cliente' cliente.id %}" class="cursor-pointer text-blue-600 hover:text-blue-800">Actualizar</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="py-2 text-gray-600">No hay clientes registrados</p>
+{% endif %}
+{% endblock contenido %}

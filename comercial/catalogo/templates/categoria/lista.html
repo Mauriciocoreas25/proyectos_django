@@ -1,16 +1,23 @@
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorias</title>
-</head>
-<body>
-    <h1>Lista de Categorias</h1>
-    <ul>
-        {% for categoria in categorias %}
-        <li>{{ categoria.id }} {{ categoria.nombre }}</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "base.html" %}
+{% block titulo %}Categoria{% endblock titulo %}
+
+{% block contenido %}
+<h1 class="font-bold text-balance text-2xl mb-4">Lista de Categorias</h1>
+<a href="{% url 'add_categoria' %}" class="p-2 bg-blue-600 my-4 inline-block text-white rounded hover:bg-blue-700">Agregar categoria</a>
+<div class="grid grid-cols-3 gap-2 border-b max-w-lg font-bold py-1">
+    <p>Nombre</p>
+    <p>Eliminar</p>
+    <p>Actualizar</p>
+</div>
+{% if categorias %}
+    {% for categoria in categorias %}
+    <div class="grid grid-cols-3 gap-2 max-w-lg hover:bg-gray-300 py-1 items-center border-b border-gray-200">
+        <p>{{ categoria.nombre }}</p>
+        <a href="{% url 'delete_categoria' categoria.id %}" class="cursor-pointer text-blue-600 hover:text-blue-800">Eliminar</a>
+        <a href="{% url 'update_categoria' categoria.id %}" class="cursor-pointer text-blue-600 hover:text-blue-800">Actualizar</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="py-2 text-gray-600">No hay categorias registradas</p>
+{% endif %}
+{% endblock contenido %}
