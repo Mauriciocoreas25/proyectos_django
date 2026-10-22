@@ -23,15 +23,29 @@ from .views.rol import (
     add_rol,
     update_rol,
 )
+from .views.producto import (
+    lista_productos,
+    delete_producto,
+    add_producto,
+    update_producto,
+)
 
 urlpatterns = [
-    # Categorías
+    # Inicio / Home
     path("", lista_categorias, name="home"),
+
+    # Categorías
     path("categoria/", lista_categorias, name="list_categoria"),
     path("categoria/lista/", lista_categorias, name="list_categorias"),
     path("categoria/agregar/", add_categoria, name="add_categoria"),
     path("categoria/actualizar/<int:id>/", update_categoria, name="update_categoria"),
     path("categoria/eliminar/<int:id>/", delete_categoria, name="delete_categoria"),
+
+    # Productos (Semana 13)
+    path("producto/", lista_productos, name="list_producto"),
+    path("producto/agregar/", add_producto, name="add_producto"),
+    path("producto/actualizar/<int:id>/", update_producto, name="update_producto"),
+    path("producto/eliminar/<int:id>/", delete_producto, name="delete_producto"),
 
     # Tipos de Pago
     path("tipo-pago/", lista_tipos_pago, name="list_tipo_pago"),

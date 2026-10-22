@@ -22,6 +22,12 @@ from .rol import (
     update_rol,
     delete_rol,
 )
+from .producto import (
+    lista_productos,
+    add_producto,
+    update_producto,
+    delete_producto,
+)
 
 __all__ = [
     'lista_categorias',
@@ -40,4 +46,8 @@ __all__ = [
     'add_rol',
     'update_rol',
     'delete_rol',
+    'lista_productos',
+    'add_producto',
+    'update_producto',
+    'delete_producto',
 ]
