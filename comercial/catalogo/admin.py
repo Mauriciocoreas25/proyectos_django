@@ -4,10 +4,8 @@ from .models import (
     Producto,
     Tipo_pago,
     Clientes,
-    Roles,
+    Rol,
     Usuario,
-    Venta,
-    Detalle_venta,
 )
 
 # Register your models here.
@@ -15,7 +13,5 @@ admin.site.register(Categoria)
 admin.site.register(Producto)
 admin.site.register(Tipo_pago)
 admin.site.register(Clientes)
-admin.site.register(Roles)
+admin.site.register(Rol)
 admin.site.register(Usuario)
-admin.site.register(Venta)
-admin.site.register(Detalle_venta)

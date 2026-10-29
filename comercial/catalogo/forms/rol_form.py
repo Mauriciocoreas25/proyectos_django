@@ -1,6 +1,6 @@
 from django import forms
 from django.utils import timezone
-from ..models.roles import Roles
+from ..models.rol import Rol
 
 
 class RolForm(forms.Form):
@@ -13,7 +13,7 @@ class RolForm(forms.Form):
     )
 
     def save(self):
-        return Roles.objects.create(
+        return Rol.objects.create(
             nombre=self.cleaned_data['nombre'],
             descripcion=self.cleaned_data['descripcion'],
             created_at=timezone.now(),

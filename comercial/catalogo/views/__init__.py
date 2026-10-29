@@ -27,7 +27,11 @@ from .producto import (
     add_producto,
     update_producto,
     delete_producto,
+    generar_pdf_view,
 )
+from .inicio import inicio
+from .home import home
+from .registrarUsuario import registraUsuario
 
 __all__ = [
     'lista_categorias',
@@ -50,4 +54,8 @@ __all__ = [
     'add_producto',
     'update_producto',
     'delete_producto',
+    'generar_pdf_view',
+    'inicio',
+    'home',
+    'registraUsuario',
 ]

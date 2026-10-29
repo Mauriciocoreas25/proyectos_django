@@ -1,17 +1,46 @@
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
-from .roles import Roles
+from .rol import Rol
 
 
-class Usuario(models.Model):
-    username = models.CharField(max_length=50, unique=True, verbose_name="Usuario")
-    password = models.CharField(max_length=255, verbose_name="Contraseña")
-    nombre = models.CharField(max_length=100, verbose_name="Nombre")
-    apellido = models.CharField(max_length=100, verbose_name="Apellido")
-    telefono = models.CharField(max_length=9, verbose_name="Teléfono")
-    correo = models.CharField(max_length=150, null=True, blank=True, verbose_name="Correo")
-    id_rol = models.ForeignKey(Roles, on_delete=models.CASCADE, related_name='usuarios', verbose_name="Rol")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de creación")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Fecha de actualización")
+class UsuarioManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        rol = extra_fields.get("rol")
+
+        if rol is not None and not isinstance(rol, Rol):
+            extra_fields["rol"] = Rol.objects.db_manager(self.db).get(pk=rol)
+
+        return super().create_superuser(
+            username, email, password, **extra_fields
+        )
+
+
+class Usuario(AbstractUser):
+    objects = UsuarioManager()
+    REQUIRED_FIELDS = ['email', "first_name", "last_name", 'telefono', 'rol']
+    telefono = models.TextField(max_length=9, verbose_name="Teléfono")
+
+    rol = models.ForeignKey(
+        Rol,
+        on_delete=models.CASCADE,
+        related_name="usuarios",
+        verbose_name="Rol",
+        default=2,
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Fecha de creación"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, verbose_name="Fecha de actualización"
+    )
+
+    @property
+    def nombre(self):
+        return self.first_name
+
+    @property
+    def apellido(self):
+        return self.last_name
 
     def __str__(self):
-        return f"id: {self.id} Usuario: {self.username} - {self.nombre} {self.apellido}"
+        return f"Nombre {self.first_name} Apellido {self.last_name}"

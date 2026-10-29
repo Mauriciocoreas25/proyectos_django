@@ -1,17 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from ..models.roles import Roles
+from ..models.rol import Rol
 from ..forms.rol_form import RolForm
 
 
 def lista_roles(request):
-    roles = Roles.objects.all()
+    roles = Rol.objects.all()
     return render(request, "rol/lista.html", context={
         'roles': roles
     })
 
 
 def delete_rol(request, id):
-    rol = get_object_or_404(Roles, id=id)
+    rol = get_object_or_404(Rol, id=id)
     rol.delete()
     return redirect('list_rol')
 
@@ -28,7 +28,7 @@ def add_rol(request):
 
 
 def update_rol(request, id):
-    rol = get_object_or_404(Roles, id=id)
+    rol = get_object_or_404(Rol, id=id)
     if request.method == 'POST':
         form = RolForm(request.POST)
         if form.is_valid():

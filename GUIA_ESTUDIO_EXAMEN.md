@@ -1,4 +1,4 @@
-# 📚 Guía Maestra de Estudio: Django Framework (Semanas 10 a 13)
+# 📚 Guía Maestra de Estudio: Django Framework (Semanas 10 a 14)
 > **Materia:** Desarrollo de Aplicaciones Web / Frameworks  
 > **Proyecto:** Sistema Comercial (`comercial`)  
 > **Enfoque:** Preparación para el Examen Teórico-Práctico
@@ -11,6 +11,8 @@
 * **Semana 11:** Relaciones entre tablas (`ForeignKey`), `related_name`, `on_delete=models.CASCADE`, fechas automáticas (`auto_now_add` vs `auto_now`), soporte de imágenes con `Pillow`.
 * **Semana 12:** Managers y consultas del ORM (`filter`, lookups `__gt`, `__icontains`), herencia de plantillas (`base.html`, `{% extends %}`, `{% block %}`), Tailwind CSS, Crispy Forms y CRUD completo.
 * **Semana 13:** Relaciones en formularios (`ModelChoiceField`), validaciones personalizadas con `clean()`, subida y borrado de imágenes con `request.FILES` y `storage.delete()`, paginación de datos con `Paginator`.
+* **Semana 14:** Autenticación y modelo de usuario personalizado (`AbstractUser`), sobrescritura de `UsuarioManager` (`create_superuser`), control de acceso por sesión (`@login_required`) y rol (`request.user.rol.nombre`), y generación de reportes en PDF con `WeasyPrint`.
+
 
 ---
 
@@ -320,7 +322,80 @@ def lista_productos(request):
 
 ---
 
-## 8. Simulación de Preguntas de Examen (Autoevaluación)
+## 8. Autenticación, Roles y Reportes PDF (Semana 14)
+
+### Modelo de Usuario Personalizado (`AbstractUser`)
+Django incluye un modelo `User` por defecto, pero cuando una aplicación requiere campos adicionales (como teléfono, rol de usuario o auditoría), se extiende `AbstractUser`:
+
+```python
+# catalogo/models/usuario.py
+from django.contrib.auth.models import AbstractUser, UserManager
+from django.db import models
+from .rol import Rol
+
+class UsuarioManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        rol = extra_fields.get("rol")
+        if rol is not None and not isinstance(rol, Rol):
+            extra_fields["rol"] = Rol.objects.db_manager(self.db).get(pk=rol)
+        return super().create_superuser(username, email, password, **extra_fields)
+
+class Usuario(AbstractUser):
+    objects = UsuarioManager()
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'telefono', 'rol']
+    telefono = models.TextField(max_length=9, verbose_name="Teléfono")
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name="usuarios", verbose_name="Rol", default=2)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de creación")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Fecha de actualización")
+```
+
+### Configuración en `settings.py`
+Para activar el modelo personalizado y los flujos de login/logout:
+```python
+AUTH_USER_MODEL = 'catalogo.Usuario'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'inicio'
+LOGIN_URL = 'login'
+```
+
+> ⚠️ **Regla Crítica de Migraciones:** Cambiar `AUTH_USER_MODEL` en un proyecto con migraciones previas rompe las referencias de claves foráneas. El procedimiento guiado consiste en:
+> 1. Vaciar la carpeta `catalogo/migrations` (dejando únicamente `__init__.py`).
+> 2. Eliminar las tablas en la base de datos MySQL (`DROP DATABASE comercial; CREATE DATABASE comercial;`).
+> 3. Ejecutar `python manage.py makemigrations` y `python manage.py migrate`.
+
+### Control de Acceso por Sesión y por Rol
+1. **Por sesión:** Decorador `@login_required` para impedir accesos anónimos.
+2. **Por rol:** Comprobación lógica en la vista (`request.user.rol.nombre`):
+```python
+@login_required
+def lista_productos(request):
+    usuario = request.user
+    if usuario.rol.nombre != 'admin':
+        return redirect('home')
+    # ... continúa la lógica para administradores
+```
+
+### Generación de Reportes en PDF con WeasyPrint
+Convierte una plantilla HTML renderizada directamente en un documento PDF descargable o visible en el navegador:
+```python
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+
+def generar_pdf_view(request):
+    productos = Producto.objects.all()
+    contexto = {'productos': productos}
+    html_string = render_to_string('producto/reporte.html', contexto)
+    pdf = HTML(string=html_string).write_pdf()
+    
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="documento.pdf"'
+    return response
+```
+
+---
+
+## 9. Simulación de Preguntas de Examen (Autoevaluación)
 
 ### Pregunta 1
 **¿Cuál es la diferencia entre ejecutar `python manage.py makemigrations` y `python manage.py migrate`?**
@@ -341,3 +416,20 @@ def lista_productos(request):
 ### Pregunta 5
 **En el sistema de plantillas DTL, ¿cuál es la diferencia entre `{% block %}` y `{% extends %}`?**
 > **Respuesta:** `{% extends "base.html" %}` se utiliza al inicio de una plantilla hija para heredar toda la estructura HTML de la plantilla padre. `{% block nombre %}` define secciones dentro de la plantilla que pueden ser reemplazadas o personalizadas por las plantillas hijas.
+
+### Pregunta 6
+**¿Por qué se debe definir la configuración `AUTH_USER_MODEL = 'app.Usuario'` al usar un modelo de usuario personalizado?**
+> **Respuesta:** Porque le indica a todo el subsistema de autenticación de Django (`django.contrib.auth`, admin, formularios de login, decoradores de sesión) que utilice la clase personalizada en lugar del modelo estándar `django.contrib.auth.models.User`.
+
+### Pregunta 7
+**¿Cómo se protege una vista para que solo usuarios con sesión activa puedan entrar, y cómo se restringe para que solo usuarios con rol de administrador tengan acceso?**
+> **Respuesta:** Se decora la vista con `@login_required` para exigir sesión activa. Dentro de la función, se accede al usuario mediante `request.user` y se valida su rol relacionado: `if request.user.rol.nombre != 'admin': return redirect('home')`.
+
+### Pregunta 8
+**¿Qué pasos realiza la función `generar_pdf_view` para generar un reporte PDF con WeasyPrint en Django?**
+> **Respuesta:** 
+> 1. Obtiene los objetos del modelo (ORM).
+> 2. Pasa los datos a `render_to_string('plantilla.html', contexto)` obteniendo el HTML en una cadena de texto.
+> 3. Convierte el HTML a binario PDF con `HTML(string=html_string).write_pdf()`.
+> 4. Devuelve una `HttpResponse` con `content_type='application/pdf'` y la cabecera `Content-Disposition`.
+

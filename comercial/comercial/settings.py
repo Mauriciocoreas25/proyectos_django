@@ -140,3 +140,10 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# Configuraciones Semana 14
+AUTH_USER_MODEL = 'catalogo.Usuario'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'inicio'
+LOGIN_URL = 'login'
+
